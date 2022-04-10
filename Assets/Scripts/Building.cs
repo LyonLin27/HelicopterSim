@@ -49,6 +49,11 @@ public class Building : MonoBehaviour
 
     public void TakeDamage(int dmg)
     {
+        health -= dmg;
+    }
+
+    public void TakeContDamage(int dmg)
+    {
         damageCurrFrame += dmg;
     }
 

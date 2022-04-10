@@ -166,7 +166,7 @@ public class BlobController : MonoBehaviour
                     GoToClosestFeature();
             }
             else {
-                building.TakeDamage((int)transform.localScale.x);
+                building.TakeContDamage((int)transform.localScale.x);
             }
         }
     }
