@@ -109,9 +109,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5230a376b7add59478a5e07e6d56535b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosion: {fileID: 605870726107182385}
+  damage: 15
+  impactForce: 500
   speed: 150
-  damage: 10
+  explosion: {fileID: 605870726107182385}
 --- !u!54 &-8201157223709305328
 Rigidbody:
   m_ObjectHideFlags: 0

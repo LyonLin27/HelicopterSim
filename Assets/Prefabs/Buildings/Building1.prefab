@@ -109,7 +109,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6883129400326859495}
-  m_LocalRotation: {x: -0, y: -0, z: -0.018107362, w: 0.9998361}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -2.9397962, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -178,6 +178,7 @@ MonoBehaviour:
   health: 100
   rubble: {fileID: 6230043364496419195, guid: 93014594be4b76e408befbe9f63600a0, type: 3}
   bossBlobCount: 0
+  minionBlobCount: 0
 --- !u!208 &3312975132890361606
 NavMeshObstacle:
   m_ObjectHideFlags: 0

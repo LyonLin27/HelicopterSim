@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AlienLaser : MonoBehaviour
+public class AlienLaser : EnemyProjectile
 {
-    public ParticleSystem explosion;
     public float speed = 300f;
-    public int damage = 10;
+    public ParticleSystem explosion;
+
     private void FixedUpdate() {
         if(GetComponent<Collider>().enabled)
             transform.position += transform.up * speed * Time.fixedDeltaTime;
     }
 
+    protected override void OnTriggerEnter(Collider other) {
+        base.OnTriggerEnter(other);
 
-    private void OnTriggerEnter(Collider other) {
-        if (other.GetComponent<Building>()) {
-            other.GetComponent<Building>().TakeLaserDamage(damage);
-        }
         explosion.Play();
         GetComponent<Collider>().enabled = false;
         GetComponent<MeshRenderer>().enabled = false;

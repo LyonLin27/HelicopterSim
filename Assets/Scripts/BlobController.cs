@@ -16,7 +16,7 @@ public class BlobController : MonoBehaviour
     private Animator animator;
     private Color color;
 
-    private BlobFood destinationFood;
+    private Transform currentDestination;
 
     private void Awake()
     {
@@ -42,6 +42,11 @@ public class BlobController : MonoBehaviour
         else if (walking && agentController.hasPath == false)
         {
             walking = false;
+        }
+
+        if (currentDestination == null)
+        {
+            GoToClosestFeature();
         }
 
         animator.SetBool("Walking", walking);
@@ -77,20 +82,21 @@ public class BlobController : MonoBehaviour
         if (transform.localScale.x <= 15 && Vector3.Distance(transform.position, closestFood.transform.position) <= Vector3.Distance(transform.position, closestBuilding.transform.position))
         {
             SetDestination(closestFood.transform.position);
-            destinationFood = closestFood;
+            currentDestination = closestFood.transform;
         }
         else
         {
             SetDestination(closestBuilding.transform.position);
+            currentDestination = closestBuilding.transform;
         }
-        
     }
 
     public void CheckFoodViable()
     {
-        if(destinationFood != null)
+        if(currentDestination != null && currentDestination.GetComponent<BlobFood>() != null)
         {
-            if(destinationFood.currentMinionBlob == this || destinationFood.currentMinionBlob == null)
+            BlobFood food = currentDestination.GetComponent<BlobFood>();
+            if (food.currentMinionBlob == this || food.currentMinionBlob == null)
             {
                 return;
             }
@@ -149,6 +155,19 @@ public class BlobController : MonoBehaviour
         if(ms){
             Damage(ms.damage);
             ms.OnCollisionEnter(null);
+        }
+
+        if (other.GetComponent<Building>())
+        {
+            Building building = other.GetComponent<Building>();
+            if (building.Destroyed)
+            {
+                if (building.transform == currentDestination)
+                    GoToClosestFeature();
+            }
+            else {
+                building.TakeDamage((int)transform.localScale.x);
+            }
         }
     }
 }

@@ -9,7 +9,6 @@ public class BlobFood : MonoBehaviour
     private int timesSplit = 0;
     private float timer = 0.0f;
     private float absorbTimer = 1.0f; // how long a node has to stay in this trigger to absorb it.
-    private GameObject currentNode;
     [HideInInspector] public GameObject currentMinionBlob;
     private float minionTimer = 0.0f;
     private float minionAbsorbTimer = 5.0f;
@@ -22,24 +21,6 @@ public class BlobFood : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(currentNode != null)
-        {
-            if(currentNode.GetComponent<Node>().NodeMesh().Nodes().Count < 13)
-            {
-                timer += Time.deltaTime;
-                if (timer > absorbTimer)
-                {
-                    currentNode.GetComponent<Node>().SplitNode();
-                    timesSplit++;
-                    if (timesSplit >= nodeContribution)
-                    {
-                        GameManager.instance.RemoveBlobFood(this);
-                        Destroy(gameObject);
-                    }
-                    timer = 0.0f;
-                }
-            }
-        }
         if(currentMinionBlob != null)
         {
             minionTimer += Time.deltaTime;
@@ -62,13 +43,6 @@ public class BlobFood : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if(currentNode == null)
-        {
-            if(other.gameObject.layer == 11)
-            {
-                currentNode = other.gameObject.GetComponent<NodeTriggerRelay>().node.gameObject;
-            }
-        }
         if(currentMinionBlob == null)
         {
             if(other.gameObject.layer == 12)
@@ -85,16 +59,6 @@ public class BlobFood : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if(currentNode != null)
-        {
-            if(other.gameObject.layer == 11)
-            {
-                if(other.gameObject.GetComponent<NodeTriggerRelay>().node.gameObject == currentNode)
-                {
-                    currentNode = null;
-                }
-            }
-        }
         if (currentMinionBlob != null)
         {
             if (other.gameObject.layer == 12)

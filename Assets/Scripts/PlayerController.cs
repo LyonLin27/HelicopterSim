@@ -302,6 +302,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void TakeImpact(Vector3 impactPoint, Vector3 force)
+    {
+        force.y *= 0.2f;
+        impactPoint.y = rb.position.y * 0.8f + impactPoint.y * 0.2f;
+        rb.AddForceAtPosition(force, impactPoint, ForceMode.Impulse);
+    }
+
     IEnumerator RestartInTime(float time){
         yield return new WaitForSeconds(time);
         Scene scene = SceneManager.GetActiveScene(); 
