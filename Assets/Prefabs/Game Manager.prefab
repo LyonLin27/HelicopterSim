@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8352628769977987596
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8352628769977987602}
+  - component: {fileID: 8352628769977987597}
+  m_Layer: 0
+  m_Name: Game Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8352628769977987602
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8352628769977987596}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8352628769977987597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8352628769977987596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ea3051b49b369e4eb10b76af9d862d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blobsPerSpawn: 5
+  maxBossBlobs: 2
+  maxUFOs: 15
+  UFOcount: 0
+  bossBlobCount: 0
+  minionBlob: {fileID: 652525902074964003, guid: cedc95e3453ad9741a9ae47fe60e351f,
+    type: 3}
+  bossBlob: {fileID: 5714120428689718735, guid: 6f9907a14553d2b4e932dfe2a2c307e5,
+    type: 3}
+  spawner: {fileID: 7917140684192057310, guid: 7e535f8aa260672418e7f434b9e21321, type: 3}
+  UFO: {fileID: 3688609695902621639, guid: 860cee170ca71bc4fa98c420ed1bc079, type: 3}
+  BuildingParent: {fileID: 0}
+  UFOSpawnPoints: {fileID: 0}
+  BuildingList: []
+  holodeck: {fileID: 0}
+  player: {fileID: 0}
+  SpawnPointsList: []
+  enemyList: []
