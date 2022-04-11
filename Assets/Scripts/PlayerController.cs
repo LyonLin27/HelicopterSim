@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public Transform camP1;
     public Transform camP2;
     public Transform camPoint;
+    public Transform camAimPoint;
     public Transform cam;
     public ParticleSystem dustParticle;
     public GameObject explosion;
@@ -25,6 +26,7 @@ public class PlayerController : MonoBehaviour
     public TextMeshProUGUI field2;
     public TextMeshProUGUI field3;
     public TextMeshProUGUI field4;
+    public TextMeshProUGUI field5;
 
     [Header("Weapons")]
     public LockOnSystem lockOnSystem;
@@ -53,6 +55,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 cam_in;
     private bool mg_in;
     private bool ms_in;
+    private bool menu_in;
 
     // parsed input
     private float acc_parsed = 0;
@@ -66,11 +69,24 @@ public class PlayerController : MonoBehaviour
     private float dcc_pow;
     private float res_pow;
     private bool isStablized = true;
-    private bool isCamControl = false;
 
     // weapon related
     private float lastFireTime = 0f;
     private float lastMissileFireTime = 0f;
+
+    // menu actions
+    private Vector2 menuAction = Vector2.zero;
+
+    // camera control
+    private enum CameraType
+    {
+        locked,
+        free,
+        forward,
+        aim
+    }
+
+    private CameraType camType;
 
     private bool controllable = false;
     private float spawnTime = 0f;
@@ -84,7 +100,6 @@ public class PlayerController : MonoBehaviour
         pi.HeliController.Tilt.performed += ctx => tlt_in = ctx.ReadValue<Vector2>();
         pi.HeliController.CamControl.performed += ctx => cam_in = ctx.ReadValue<Vector2>();
         pi.HeliController.Unlock.performed += ctx => isStablized = false;
-        pi.HeliController.CamSwitch.performed += ctx => isCamControl = true;
         pi.HeliController.MachineGun.performed += ctx => mg_in = true;
         pi.HeliController.Missile.performed += ctx => ms_in = true;
 
@@ -94,12 +109,20 @@ public class PlayerController : MonoBehaviour
         pi.HeliController.Tilt.canceled += ctx => tlt_in = Vector2.zero;
         pi.HeliController.CamControl.canceled += ctx => cam_in = Vector2.zero;
         pi.HeliController.Unlock.canceled += ctx => isStablized = true;
-        pi.HeliController.CamSwitch.canceled += ctx => isCamControl = false;
         pi.HeliController.MachineGun.canceled += ctx => mg_in = false;
         pi.HeliController.Missile.canceled += ctx => ms_in = false;
 
+        pi.HeliController.MenuAction.performed += ctx =>
+        {
+            menu_in = true;
+            menuAction = ctx.ReadValue<Vector2>();
+        };
+
         rb = GetComponent<Rigidbody>();
         Physics.gravity = new Vector3(0f, -30f, 0f);
+
+        camType = CameraType.locked;
+        field5.text = camType.ToString();
 
         foreach (MachineGun mg in machineGuns) {
             mg.heliRB = rb;
@@ -119,16 +142,8 @@ public class PlayerController : MonoBehaviour
     }
 
     private void Update() {
-        if (isCamControl) {
-            float targetRotX = -90f * cam_in.x;
-            float lerpResultX = Mathf.LerpAngle(camP1.transform.localEulerAngles.z, targetRotX, 0.1f);
-            camP1.localEulerAngles = new Vector3(0f, 0f, lerpResultX);
-            float targetRotY = -90f * cam_in.y;
-            float lerpResultY = Mathf.LerpAngle(camP2.transform.localEulerAngles.x, targetRotY, 0.1f);
-            camP2.localEulerAngles = new Vector3(lerpResultY, 0f, 0f);
+        HandleCameraUpdate();
 
-            rot_in = 0f;
-        }
         acc_parsed = Mathf.Lerp(acc_parsed, acc_in, Time.deltaTime*20f);
         dcc_parsed = Mathf.Lerp(dcc_parsed, dcc_in, Time.deltaTime*20f);
         rot_parsed = Mathf.Lerp(rot_parsed, rot_in, Time.deltaTime*20f);
@@ -155,7 +170,6 @@ public class PlayerController : MonoBehaviour
                 msWaveCount = 0;
             }
         //}
-        
 
         // dust particle
         RaycastHit hit;
@@ -213,10 +227,69 @@ public class PlayerController : MonoBehaviour
                 rb.rotation = Quaternion.Euler(currTlt);
             }
         //}
-        
 
-        cam.position = Vector3.Lerp(cam.position, camPoint.position, Time.fixedDeltaTime * 10f);
-        cam.rotation = Quaternion.Lerp(cam.rotation, camPoint.rotation, Time.fixedDeltaTime * 10f);
+        HandleCameraFixedUpdate();
+    }
+
+    private void HandleCameraUpdate() {
+        if (menu_in)
+        {
+            menu_in = false;
+            if (menuAction.x > 0.5f && camType != CameraType.forward)
+                camType = CameraType.forward;
+            else if (menuAction.x < 0.5f && camType != CameraType.locked)
+                camType = CameraType.locked;
+            else if (menuAction.y > 0.5f && camType != CameraType.aim)
+                camType = CameraType.aim;
+            else if (menuAction.y < 0.5f && camType != CameraType.free)
+                camType = CameraType.free;
+            else
+                camType = CameraType.locked; // default
+
+            field5.text = camType.ToString();
+        }
+
+        switch (camType)
+        {
+            case CameraType.locked:
+
+                break;
+
+            case CameraType.free:
+                float targetRotX = -90f * cam_in.x;
+                float lerpResultX = Mathf.LerpAngle(camP1.transform.localEulerAngles.z, targetRotX, 0.1f);
+                camP1.localEulerAngles = new Vector3(0f, 0f, lerpResultX);
+                float targetRotY = -90f * cam_in.y;
+                float lerpResultY = Mathf.LerpAngle(camP2.transform.localEulerAngles.x, targetRotY, 0.1f);
+                camP2.localEulerAngles = new Vector3(lerpResultY, 0f, 0f);
+
+                rot_in = 0f;
+
+                break;
+
+            case CameraType.forward:
+                Vector3 moveDir = rb.velocity.normalized;
+                camP1.up = moveDir;
+                break;
+
+            case CameraType.aim:
+                break;
+        }
+    }
+
+    private void HandleCameraFixedUpdate()
+    {
+        if (camType == CameraType.aim)
+        {
+            cam.position = camAimPoint.position;
+            cam.rotation = camAimPoint.rotation;
+        }
+        else
+        {
+            cam.position = Vector3.Lerp(cam.position, camPoint.position, Time.fixedDeltaTime * 10f);
+            cam.rotation = Quaternion.Lerp(cam.rotation, camPoint.rotation, Time.fixedDeltaTime * 10f);
+        }
+
     }
 
     private void ModifyAccPow() {

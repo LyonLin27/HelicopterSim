@@ -59,14 +59,6 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                     ""interactions"": """"
                 },
                 {
-                    ""name"": ""CamSwitch"",
-                    ""type"": ""Button"",
-                    ""id"": ""4be84dc1-78a6-4a96-89f5-7b5dd9fb89dc"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """"
-                },
-                {
                     ""name"": ""CamControl"",
                     ""type"": ""Value"",
                     ""id"": ""cc872eef-7617-476f-8d2b-54866cb15c53"",
@@ -87,6 +79,14 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                     ""type"": ""Button"",
                     ""id"": ""8cbbba25-d09c-4d02-8056-15bede0525c9"",
                     ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
+                },
+                {
+                    ""name"": ""MenuAction"",
+                    ""type"": ""Value"",
+                    ""id"": ""4f61e4be-18cb-42ac-b3a9-abbd0d773560"",
+                    ""expectedControlType"": ""Dpad"",
                     ""processors"": """",
                     ""interactions"": """"
                 }
@@ -149,28 +149,6 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""aad287f9-1ecd-4017-9f2b-8fc86081244d"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Controller"",
-                    ""action"": ""CamSwitch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c7fea166-24af-4ab7-b833-6997bf573f24"",
-                    ""path"": ""<Gamepad>/rightStickPress"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": ""Controller"",
-                    ""action"": ""CamSwitch"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
                     ""id"": ""7d094f9c-3102-4d5b-ba3a-88e6db70253b"",
                     ""path"": ""<Gamepad>/rightStick"",
                     ""interactions"": """",
@@ -201,6 +179,17 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                     ""action"": ""Missile"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7b27e791-6fbd-434b-95b2-4cab9e1b5cb1"",
+                    ""path"": ""<Gamepad>/dpad"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MenuAction"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -214,10 +203,10 @@ public class @PlayerActions : IInputActionCollection, IDisposable
         m_HeliController_Tilt = m_HeliController.FindAction("Tilt", throwIfNotFound: true);
         m_HeliController_Rotate = m_HeliController.FindAction("Rotate", throwIfNotFound: true);
         m_HeliController_Unlock = m_HeliController.FindAction("Unlock", throwIfNotFound: true);
-        m_HeliController_CamSwitch = m_HeliController.FindAction("CamSwitch", throwIfNotFound: true);
         m_HeliController_CamControl = m_HeliController.FindAction("CamControl", throwIfNotFound: true);
         m_HeliController_MachineGun = m_HeliController.FindAction("MachineGun", throwIfNotFound: true);
         m_HeliController_Missile = m_HeliController.FindAction("Missile", throwIfNotFound: true);
+        m_HeliController_MenuAction = m_HeliController.FindAction("MenuAction", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -272,10 +261,10 @@ public class @PlayerActions : IInputActionCollection, IDisposable
     private readonly InputAction m_HeliController_Tilt;
     private readonly InputAction m_HeliController_Rotate;
     private readonly InputAction m_HeliController_Unlock;
-    private readonly InputAction m_HeliController_CamSwitch;
     private readonly InputAction m_HeliController_CamControl;
     private readonly InputAction m_HeliController_MachineGun;
     private readonly InputAction m_HeliController_Missile;
+    private readonly InputAction m_HeliController_MenuAction;
     public struct HeliControllerActions
     {
         private @PlayerActions m_Wrapper;
@@ -285,10 +274,10 @@ public class @PlayerActions : IInputActionCollection, IDisposable
         public InputAction @Tilt => m_Wrapper.m_HeliController_Tilt;
         public InputAction @Rotate => m_Wrapper.m_HeliController_Rotate;
         public InputAction @Unlock => m_Wrapper.m_HeliController_Unlock;
-        public InputAction @CamSwitch => m_Wrapper.m_HeliController_CamSwitch;
         public InputAction @CamControl => m_Wrapper.m_HeliController_CamControl;
         public InputAction @MachineGun => m_Wrapper.m_HeliController_MachineGun;
         public InputAction @Missile => m_Wrapper.m_HeliController_Missile;
+        public InputAction @MenuAction => m_Wrapper.m_HeliController_MenuAction;
         public InputActionMap Get() { return m_Wrapper.m_HeliController; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -313,9 +302,6 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                 @Unlock.started -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnUnlock;
                 @Unlock.performed -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnUnlock;
                 @Unlock.canceled -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnUnlock;
-                @CamSwitch.started -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnCamSwitch;
-                @CamSwitch.performed -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnCamSwitch;
-                @CamSwitch.canceled -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnCamSwitch;
                 @CamControl.started -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnCamControl;
                 @CamControl.performed -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnCamControl;
                 @CamControl.canceled -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnCamControl;
@@ -325,6 +311,9 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                 @Missile.started -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnMissile;
                 @Missile.performed -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnMissile;
                 @Missile.canceled -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnMissile;
+                @MenuAction.started -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnMenuAction;
+                @MenuAction.performed -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnMenuAction;
+                @MenuAction.canceled -= m_Wrapper.m_HeliControllerActionsCallbackInterface.OnMenuAction;
             }
             m_Wrapper.m_HeliControllerActionsCallbackInterface = instance;
             if (instance != null)
@@ -344,9 +333,6 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                 @Unlock.started += instance.OnUnlock;
                 @Unlock.performed += instance.OnUnlock;
                 @Unlock.canceled += instance.OnUnlock;
-                @CamSwitch.started += instance.OnCamSwitch;
-                @CamSwitch.performed += instance.OnCamSwitch;
-                @CamSwitch.canceled += instance.OnCamSwitch;
                 @CamControl.started += instance.OnCamControl;
                 @CamControl.performed += instance.OnCamControl;
                 @CamControl.canceled += instance.OnCamControl;
@@ -356,6 +342,9 @@ public class @PlayerActions : IInputActionCollection, IDisposable
                 @Missile.started += instance.OnMissile;
                 @Missile.performed += instance.OnMissile;
                 @Missile.canceled += instance.OnMissile;
+                @MenuAction.started += instance.OnMenuAction;
+                @MenuAction.performed += instance.OnMenuAction;
+                @MenuAction.canceled += instance.OnMenuAction;
             }
         }
     }
@@ -367,9 +356,9 @@ public class @PlayerActions : IInputActionCollection, IDisposable
         void OnTilt(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
         void OnUnlock(InputAction.CallbackContext context);
-        void OnCamSwitch(InputAction.CallbackContext context);
         void OnCamControl(InputAction.CallbackContext context);
         void OnMachineGun(InputAction.CallbackContext context);
         void OnMissile(InputAction.CallbackContext context);
+        void OnMenuAction(InputAction.CallbackContext context);
     }
 }

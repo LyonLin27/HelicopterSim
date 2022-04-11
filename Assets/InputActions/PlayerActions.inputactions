@@ -46,14 +46,6 @@
                     "interactions": ""
                 },
                 {
-                    "name": "CamSwitch",
-                    "type": "Button",
-                    "id": "4be84dc1-78a6-4a96-89f5-7b5dd9fb89dc",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": ""
-                },
-                {
                     "name": "CamControl",
                     "type": "Value",
                     "id": "cc872eef-7617-476f-8d2b-54866cb15c53",
@@ -74,6 +66,14 @@
                     "type": "Button",
                     "id": "8cbbba25-d09c-4d02-8056-15bede0525c9",
                     "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "MenuAction",
+                    "type": "Value",
+                    "id": "4f61e4be-18cb-42ac-b3a9-abbd0d773560",
+                    "expectedControlType": "Dpad",
                     "processors": "",
                     "interactions": ""
                 }
@@ -136,28 +136,6 @@
                 },
                 {
                     "name": "",
-                    "id": "aad287f9-1ecd-4017-9f2b-8fc86081244d",
-                    "path": "<Gamepad>/rightShoulder",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller",
-                    "action": "CamSwitch",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c7fea166-24af-4ab7-b833-6997bf573f24",
-                    "path": "<Gamepad>/rightStickPress",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Controller",
-                    "action": "CamSwitch",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "7d094f9c-3102-4d5b-ba3a-88e6db70253b",
                     "path": "<Gamepad>/rightStick",
                     "interactions": "",
@@ -186,6 +164,17 @@
                     "processors": "",
                     "groups": "Controller",
                     "action": "Missile",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7b27e791-6fbd-434b-95b2-4cab9e1b5cb1",
+                    "path": "<Gamepad>/dpad",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MenuAction",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
