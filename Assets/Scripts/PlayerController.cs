@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using TMPro;
 
 using UnityEngine.SceneManagement;
@@ -19,7 +20,7 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem dustParticle;
     public GameObject explosion;
     private Rigidbody rb;
-    private PlayerActions pi;
+    private PlayerInput pi;
 
     // debug
     public TextMeshProUGUI field1;
@@ -47,35 +48,15 @@ public class PlayerController : MonoBehaviour
     public float rotAcc = 5f;
     public int HP = 100;
 
-    // raw input
-    private float acc_in;
-    private float dcc_in;
-    private float rot_in;
-    private Vector2 tlt_in;
-    private Vector2 cam_in;
-    private bool mg_in;
-    private bool ms_in;
-    private bool menu_in;
-
-    // parsed input
-    private float acc_parsed = 0;
-    private float dcc_parsed = 0;
-    private float rot_parsed = 0;
-    private Vector2 tlt_parsed = Vector2.zero;
-
     // key variables
     private float currBladeSpd = 0f;
     private float acc_pow;
     private float dcc_pow;
     private float res_pow;
-    private bool isStablized = true;
 
     // weapon related
     private float lastFireTime = 0f;
     private float lastMissileFireTime = 0f;
-
-    // menu actions
-    private Vector2 menuAction = Vector2.zero;
 
     // camera control
     private enum CameraType
@@ -92,31 +73,6 @@ public class PlayerController : MonoBehaviour
     private float spawnTime = 0f;
 
     private void Awake() {
-        pi = new PlayerActions();
-        pi.Enable();
-        pi.HeliController.Acc.performed += ctx => acc_in = ctx.ReadValue<float>();
-        pi.HeliController.Dcc.performed += ctx => dcc_in = ctx.ReadValue<float>();
-        pi.HeliController.Rotate.performed += ctx => rot_in = ctx.ReadValue<float>();
-        pi.HeliController.Tilt.performed += ctx => tlt_in = ctx.ReadValue<Vector2>();
-        pi.HeliController.CamControl.performed += ctx => cam_in = ctx.ReadValue<Vector2>();
-        pi.HeliController.Unlock.performed += ctx => isStablized = false;
-        pi.HeliController.MachineGun.performed += ctx => mg_in = true;
-        pi.HeliController.Missile.performed += ctx => ms_in = true;
-
-        pi.HeliController.Acc.canceled += ctx => acc_in = 0f;
-        pi.HeliController.Dcc.canceled += ctx => dcc_in = 0f;
-        pi.HeliController.Rotate.canceled += ctx => rot_in = 0f;
-        pi.HeliController.Tilt.canceled += ctx => tlt_in = Vector2.zero;
-        pi.HeliController.CamControl.canceled += ctx => cam_in = Vector2.zero;
-        pi.HeliController.Unlock.canceled += ctx => isStablized = true;
-        pi.HeliController.MachineGun.canceled += ctx => mg_in = false;
-        pi.HeliController.Missile.canceled += ctx => ms_in = false;
-
-        pi.HeliController.MenuAction.performed += ctx =>
-        {
-            menu_in = true;
-            menuAction = ctx.ReadValue<Vector2>();
-        };
 
         rb = GetComponent<Rigidbody>();
         Physics.gravity = new Vector3(0f, -30f, 0f);
@@ -139,20 +95,29 @@ public class PlayerController : MonoBehaviour
             GameManager.instance.player = this;
         //Controllable(false);
 
+        if(GameManager.instance)
+            pi = GameManager.instance.playerInput;
+        if (pi == null)
+        {
+            pi = new PlayerInput();
+        }
+        pi.actions.HeliController.MenuAction.performed += ctx => HandleMenuInput();
     }
 
-    private void Update() {
+	private void OnDestroy()
+	{
+        pi.actions.HeliController.MenuAction.performed -= ctx => HandleMenuInput();
+    }
+
+	private void Update() {
         HandleCameraUpdate();
 
-        acc_parsed = Mathf.Lerp(acc_parsed, acc_in, Time.deltaTime*20f);
-        dcc_parsed = Mathf.Lerp(dcc_parsed, dcc_in, Time.deltaTime*20f);
-        rot_parsed = Mathf.Lerp(rot_parsed, rot_in, Time.deltaTime*20f);
-        tlt_parsed = Vector2.Lerp(tlt_parsed, tlt_in, Time.deltaTime * 20f);
+        pi.Tick();
 
         //if(controllable)
         //{
-            // weapons
-            if (mg_in && Time.time - lastFireTime > mgInterval)
+        // weapons
+        if (pi.mg_in && Time.time - lastFireTime > mgInterval)
             {
                 foreach (MachineGun mg in machineGuns)
                 {
@@ -160,7 +125,7 @@ public class PlayerController : MonoBehaviour
                 }
                 lastFireTime = Time.time;
             }
-            if(ms_in && Time.time - lastMissileFireTime > msInterval && msWaveCount < msWaveMax){
+            if(pi.ms_in && Time.time - lastMissileFireTime > msInterval && msWaveCount < msWaveMax){
                 MissileLauncher ms = missileLaunchers[msWaveCount % 2];
                 ms.Fire(lockOnSystem.GetLockedTarget(msWaveCount));
                 msWaveCount++;
@@ -194,11 +159,11 @@ public class PlayerController : MonoBehaviour
         //if(controllable)
         //{
             ModifyAccPow();
-            currBladeSpd += (acc_parsed * acc_pow - dcc_parsed * dcc_pow) * Time.fixedDeltaTime;
+            currBladeSpd += (pi.acc_parsed * acc_pow - pi.dcc_parsed * dcc_pow) * Time.fixedDeltaTime;
             currBladeSpd += (currBladeSpd > 0 ? -res_pow : 0) * Time.fixedDeltaTime;
             if (currBladeSpd < 0)
                 currBladeSpd = 0;
-            field1.text = ((int)(acc_parsed * acc_pow - dcc_parsed * dcc_pow + (currBladeSpd > 0 ? -res_pow : 0))).ToString();
+            field1.text = ((int)(pi.acc_parsed * acc_pow - pi.dcc_parsed * dcc_pow + (currBladeSpd > 0 ? -res_pow : 0))).ToString();
             field2.text = ((int)currBladeSpd).ToString();
             field3.text = ((int)transform.position.y).ToString();
             field4.text = HP.ToString();
@@ -208,12 +173,12 @@ public class PlayerController : MonoBehaviour
             rearBlades.transform.localEulerAngles = new Vector3(0f, 0f, currRot.z + currBladeSpd * Time.fixedDeltaTime/1000f);
             rb.AddForce(-blades.transform.forward * currBladeSpd * Time.fixedDeltaTime, ForceMode.Acceleration);
 
-            Vector3 torque = new Vector3(tlt_parsed.y * tltAcc, -tlt_parsed.x * tltAcc, 0f);
+            Vector3 torque = new Vector3(pi.tlt_parsed.y * tltAcc, -pi.tlt_parsed.x * tltAcc, 0f);
             rb.AddRelativeTorque(torque);
-            rb.AddTorque(0f, rot_parsed * rotAcc, 0f);
+            rb.AddTorque(0f, pi.rot_parsed * rotAcc, 0f);
 
             // stablizer
-            if (isStablized)
+            if (pi.isStablized)
             {
                 Vector3 currTlt = rb.rotation.eulerAngles;
                 if (currTlt.x > 270f)
@@ -232,21 +197,9 @@ public class PlayerController : MonoBehaviour
     }
 
     private void HandleCameraUpdate() {
-        if (menu_in)
+        if (pi.aim_in || camType == CameraType.aim)
         {
-            menu_in = false;
-            if (menuAction.x > 0.5f && camType != CameraType.forward)
-                camType = CameraType.forward;
-            else if (menuAction.x < 0.5f && camType != CameraType.locked)
-                camType = CameraType.locked;
-            else if (menuAction.y > 0.5f && camType != CameraType.aim)
-                camType = CameraType.aim;
-            else if (menuAction.y < 0.5f && camType != CameraType.free)
-                camType = CameraType.free;
-            else
-                camType = CameraType.locked; // default
-
-            field5.text = camType.ToString();
+            camType = pi.aim_in ? CameraType.aim : CameraType.locked;
         }
 
         switch (camType)
@@ -256,14 +209,14 @@ public class PlayerController : MonoBehaviour
                 break;
 
             case CameraType.free:
-                float targetRotX = -90f * cam_in.x;
+                float targetRotX = -90f * pi.cam_in.x;
                 float lerpResultX = Mathf.LerpAngle(camP1.transform.localEulerAngles.z, targetRotX, 0.1f);
                 camP1.localEulerAngles = new Vector3(0f, 0f, lerpResultX);
-                float targetRotY = -90f * cam_in.y;
+                float targetRotY = -90f * pi.cam_in.y;
                 float lerpResultY = Mathf.LerpAngle(camP2.transform.localEulerAngles.x, targetRotY, 0.1f);
                 camP2.localEulerAngles = new Vector3(lerpResultY, 0f, 0f);
 
-                rot_in = 0f;
+                pi.rot_in = 0f;
 
                 break;
 
@@ -274,6 +227,25 @@ public class PlayerController : MonoBehaviour
 
             case CameraType.aim:
                 break;
+        }
+    }
+
+    private void HandleMenuInput()
+    {
+        if (!GameManager.instance.playerTakeOff)
+            return;
+
+        if (pi.menu_in.y > 0.5f)
+        {
+            if (camType != CameraType.aim)
+            {
+                if (camType != CameraType.free)
+                    camType = CameraType.free;
+                else
+                    camType = CameraType.locked; // default
+            }
+
+            field5.text = camType.ToString();
         }
     }
 
@@ -309,6 +281,7 @@ public class PlayerController : MonoBehaviour
             res_pow = res_pow / 1.5f;
         }
     }
+
     public void Controllable(bool condition)
     {
         controllable = condition;

@@ -15,8 +15,8 @@ public class EnemyProjectile : MonoBehaviour
         }
         else if (other.gameObject.layer == LayerMask.NameToLayer("Player"))
         {
-            other.GetComponent<PlayerController>().TakeDamage(damage);
-            other.GetComponent<PlayerController>().TakeImpact(transform.position, impactForce * transform.up);
+            GameManager.instance.player.TakeDamage(damage);
+            GameManager.instance.player.TakeImpact(transform.position, impactForce * transform.up);
         }
     }
 }

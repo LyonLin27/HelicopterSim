@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public partial class GameManager : MonoBehaviour
 {
     [Header("Settings")]
     public int blobsPerSpawn = 5;
@@ -21,22 +21,35 @@ public class GameManager : MonoBehaviour
     public Transform UFOSpawnPoints;
     public List<Building> BuildingList;
     public MeshRenderer holodeck;
-    public SpriteRenderer tutorial;
+    public Transform levelPractice;
+    public Transform levelCity;
+    public List<Transform> hideOnTakeOff;
     private List<BlobFood> BlobFoodList = new List<BlobFood>();
 
     private float holodeckTimer = 0.0f;
     private bool holodeckFading = false;
     private float holodeckFadeDelay = 4.0f;
     private float holodeckFadeDuration = 2.0f;
-    private bool playerTakeOff = false;
+    [HideInInspector]
+    public bool playerTakeOff = false;
 
     public PlayerController player;
+    public PlayerInput playerInput;
     [HideInInspector] public List<SpawnPoint> SpawnPointsList = new List<SpawnPoint>();
 
     [HideInInspector] public List<Transform> enemyList;
 
+    public enum LevelType { practice, city}
+    [HideInInspector]
+    public LevelType currLevel = LevelType.practice;
+
     private void Awake() {
         instance = this;
+
+        playerInput = new PlayerInput();
+
+        if (PlayerPrefs.HasKey("SavedLevel"))
+            SelectLevel((LevelType)PlayerPrefs.GetInt("SavedLevel"));
 
         BuildingList = new List<Building>();
         enemyList = new List<Transform>();
@@ -47,14 +60,26 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void Update()
+	private void OnDestroy()
+	{
+        playerInput.Destroy();
+	}
+
+	public void Update()
     {
         if(!playerTakeOff){
             if(player.GetBladeSpd() > 1500){
                 InitiateHolodeckFade();
-                InvokeRepeating("SpawnSomething", 5.0f, 20f);
+                if (currLevel == LevelType.city)
+                {
+                    InvokeRepeating("SpawnSomething", 5.0f, 20f);
+                }
                 holodeck.GetComponent<Collider>().enabled = false;
                 playerTakeOff = true;
+                foreach (var trans in hideOnTakeOff)
+                {
+                    trans.gameObject.SetActive(false);
+                }
             }
             return;
         }
@@ -65,7 +90,6 @@ public class GameManager : MonoBehaviour
             float alpha = Mathf.Lerp(1.0f, 0.0f, holodeckTimer / holodeckFadeDuration);
             MaterialPropertyBlock block = new MaterialPropertyBlock();
             block.SetColor("_BaseColor", new Color(1, 1, 1, alpha));
-            tutorial.color = new Color(1, 1, 1, alpha);
             holodeck.SetPropertyBlock(block);
             if (holodeckTimer > holodeckFadeDuration)
             {
@@ -90,6 +114,14 @@ public class GameManager : MonoBehaviour
         //InvokeRepeating("SpawnSomething", 10.0f, 90f);
         EnablePlayerControl();
         //Invoke("InitiateHolodeckFade", holodeckFadeDelay);
+
+        SetupLevel();
+    }
+
+    private void SetupLevel()
+    {
+        levelCity.gameObject.SetActive(currLevel == LevelType.city);
+        levelPractice.gameObject.SetActive(currLevel == LevelType.practice);
     }
 
     public void SpawnSomething() // creates a spawner teleport beam at a random spawnpoint
@@ -201,5 +233,25 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    
+}
+
+public partial class GameManager
+{
+    // menu callbacks
+    public void SelectLevel(LevelType levelType)
+    {
+        currLevel = levelType;
+        SetupLevel();
+
+        PlayerPrefs.SetInt("SavedLevel", (int)levelType);
+        PlayerPrefs.Save();
+    }
+
+    public void SelectControlType(PlayerInput.AxisControlType type)
+    {
+        playerInput.RebindAxis(type);
+
+        PlayerPrefs.SetInt("SavedAxisControl", (int)type);
+        PlayerPrefs.Save();
+    }
 }
