@@ -49,7 +49,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2727584659e83354a92b3603150a2ff5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 10
+  health: 20
+  atkDamage: 1
   mesh: {fileID: 5492148907601309273}
   hitParticle: {fileID: 356745834555835355, guid: 55d20ffbfde54bb4a9129851bbf5dbb6,
     type: 3}
@@ -98,7 +99,7 @@ Rigidbody:
   m_GameObject: {fileID: 652525902074964003}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
+  m_Drag: 5
   m_AngularDrag: 0.05
   m_UseGravity: 0
   m_IsKinematic: 0

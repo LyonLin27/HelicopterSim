@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1378,6 +1378,31 @@ PrefabInstance:
     - target: {fileID: 4756699544453195419, guid: 8fde7d3b0ac02d645879fc38a2445109,
         type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5832963016424287661, guid: 8fde7d3b0ac02d645879fc38a2445109,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5832963016424287661, guid: 8fde7d3b0ac02d645879fc38a2445109,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5832963016424287661, guid: 8fde7d3b0ac02d645879fc38a2445109,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5832963016424287661, guid: 8fde7d3b0ac02d645879fc38a2445109,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5832963016424287661, guid: 8fde7d3b0ac02d645879fc38a2445109,
+        type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6641001370263483225, guid: 8fde7d3b0ac02d645879fc38a2445109,
@@ -2880,6 +2905,12 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!224 &779014217 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 1086463806987149658, guid: ff38b56789c60b144b627fa76328e22c,
+    type: 3}
+  m_PrefabInstance: {fileID: 1171158460}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &835548787 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 5487851575961779185, guid: ff38b56789c60b144b627fa76328e22c,
@@ -3074,6 +3105,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1.0000002, z: 0.060013223}
   m_Center: {x: 0, y: 3.5678434e-15, z: -0.53163165}
+--- !u!114 &902243755 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6044248747504623119, guid: ff38b56789c60b144b627fa76328e22c,
+    type: 3}
+  m_PrefabInstance: {fileID: 1171158460}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 902243752}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 975050bc7854670478c1c87bb2a5f8ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!43 &919150537
 Mesh:
   m_ObjectHideFlags: 0
@@ -5004,6 +5047,11 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6044248747504623119, guid: ff38b56789c60b144b627fa76328e22c,
+        type: 3}
+      propertyPath: levelInfo
+      value: 
+      objectReference: {fileID: 779014217}
     - target: {fileID: 6593583138769155312, guid: ff38b56789c60b144b627fa76328e22c,
         type: 3}
       propertyPath: m_textInfo.characterCount
@@ -5103,6 +5151,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Color.a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8852713350538401083, guid: ff38b56789c60b144b627fa76328e22c,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 9187167044070082671, guid: ff38b56789c60b144b627fa76328e22c,
         type: 3}
@@ -7550,6 +7603,11 @@ PrefabInstance:
       propertyPath: hideOnTakeOff.Array.data[1]
       value: 
       objectReference: {fileID: 835548787}
+    - target: {fileID: 8352628769977987597, guid: ad9dc3ccace874f48aad8e7b4fce861c,
+        type: 3}
+      propertyPath: holodeckUI
+      value: 
+      objectReference: {fileID: 902243755}
     - target: {fileID: 8352628769977987602, guid: ad9dc3ccace874f48aad8e7b4fce861c,
         type: 3}
       propertyPath: m_LocalPosition.x

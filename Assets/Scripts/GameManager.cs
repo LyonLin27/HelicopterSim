@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public partial class GameManager : MonoBehaviour
 {
@@ -13,6 +14,7 @@ public partial class GameManager : MonoBehaviour
     public static GameManager instance;
 
     [Header("References")]
+    public AudioSource bgm;
     public GameObject minionBlob;
     public GameObject bossBlob;
     public GameObject spawner;
@@ -21,6 +23,7 @@ public partial class GameManager : MonoBehaviour
     public Transform UFOSpawnPoints;
     public List<Building> BuildingList;
     public MeshRenderer holodeck;
+    public HolodeckUIManager holodeckUI;
     public Transform levelPractice;
     public Transform levelCity;
     public List<Transform> hideOnTakeOff;
@@ -43,6 +46,8 @@ public partial class GameManager : MonoBehaviour
     [HideInInspector]
     public LevelType currLevel = LevelType.practice;
 
+    private int score;
+
     private void Awake() {
         instance = this;
 
@@ -58,6 +63,8 @@ public partial class GameManager : MonoBehaviour
         {
             BuildingList.Add(building);
         }
+
+        score = 0;
     }
 
 	private void OnDestroy()
@@ -80,6 +87,7 @@ public partial class GameManager : MonoBehaviour
                 {
                     trans.gameObject.SetActive(false);
                 }
+                bgm.Play();
             }
             return;
         }
@@ -156,11 +164,17 @@ public partial class GameManager : MonoBehaviour
     }
 
     public Building GetRandBuilding() {
-        int randIndex = Random.Range(0, BuildingList.Count);
-        while (BuildingList[randIndex].health <= 0) {
-            randIndex = Random.Range(0, BuildingList.Count);
+        var activeBuildingList = BuildingList.FindAll(x => x.health > 0);
+        if (activeBuildingList.Count == 0)
+        {
+            HandlePlayerDeath();
         }
-        return BuildingList[randIndex];
+
+        int randIndex = Random.Range(0, activeBuildingList.Count);
+        while (activeBuildingList[randIndex].health <= 0) {
+            randIndex = Random.Range(0, activeBuildingList.Count);
+        }
+        return activeBuildingList[randIndex];
     }
 
     public SpawnPoint GetRandSpawnPoint()
@@ -233,6 +247,48 @@ public partial class GameManager : MonoBehaviour
             }
         }
     }
+
+    public void HandlePlayerDeath()
+    {
+        if (PlayerPrefs.HasKey("HighestScore"))
+        {
+            if(PlayerPrefs.GetInt("HighestScore") <score)
+                PlayerPrefs.SetInt("HighestScore", score);
+        }
+        else 
+        {
+            PlayerPrefs.SetInt("HighestScore", score);
+        }
+
+        StartCoroutine(RestartInTime(5f));
+    }
+
+    IEnumerator RestartInTime(float time)
+    {
+        float startTime = Time.time;
+        while (Time.time - startTime < time)
+        {
+            yield return new WaitForEndOfFrame();
+            bgm.pitch = (time - (Time.time - startTime)) / time;
+        }
+        Scene scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
+    }
+
+    #region Score
+
+    public int GetScore()
+    {
+        return score;
+    }
+
+    public void AddScore(int value)
+    {
+        score += value;
+        player.field6.text = string.Format("{0} (+{1})", score, value);
+    }
+
+	#endregion Score
 }
 
 public partial class GameManager
@@ -245,6 +301,11 @@ public partial class GameManager
 
         PlayerPrefs.SetInt("SavedLevel", (int)levelType);
         PlayerPrefs.Save();
+
+        string info = "Level: " + levelType.ToString();
+        if (levelType == LevelType.city && PlayerPrefs.HasKey("HighestScore"))
+            info += "\nHighest score: " + PlayerPrefs.GetInt("HighestScore");
+        holodeckUI.SetLevelInfo(info);
     }
 
     public void SelectControlType(PlayerInput.AxisControlType type)

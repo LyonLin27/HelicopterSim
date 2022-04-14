@@ -4,11 +4,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
 
-using UnityEngine.SceneManagement;
-
 public class PlayerController : MonoBehaviour
 {
     [Header("Ref")]
+    public AudioSource bladesAudio;
     public List<GameObject> hideWhenDistroy;
     public GameObject blades;
     public GameObject rearBlades;
@@ -28,6 +27,7 @@ public class PlayerController : MonoBehaviour
     public TextMeshProUGUI field3;
     public TextMeshProUGUI field4;
     public TextMeshProUGUI field5;
+    public TextMeshProUGUI field6;
 
     [Header("Weapons")]
     public LockOnSystem lockOnSystem;
@@ -169,8 +169,9 @@ public class PlayerController : MonoBehaviour
             field4.text = HP.ToString();
 
             Vector3 currRot = blades.transform.localEulerAngles;
+            Vector3 currRearRot = rearBlades.transform.localEulerAngles;
             blades.transform.localEulerAngles = new Vector3(0f, 0f, currRot.z + currBladeSpd * Time.fixedDeltaTime);
-            rearBlades.transform.localEulerAngles = new Vector3(0f, 0f, currRot.z + currBladeSpd * Time.fixedDeltaTime/1000f);
+            rearBlades.transform.localEulerAngles = new Vector3(0f, 0f, currRearRot.z + currBladeSpd * 0.5f * Time.fixedDeltaTime);
             rb.AddForce(-blades.transform.forward * currBladeSpd * Time.fixedDeltaTime, ForceMode.Acceleration);
 
             Vector3 torque = new Vector3(pi.tlt_parsed.y * tltAcc, -pi.tlt_parsed.x * tltAcc, 0f);
@@ -194,6 +195,8 @@ public class PlayerController : MonoBehaviour
         //}
 
         HandleCameraFixedUpdate();
+
+        bladesAudio.pitch = Mathf.Clamp(currBladeSpd / 1500, 0, 2f);
     }
 
     private void HandleCameraUpdate() {
@@ -266,9 +269,9 @@ public class PlayerController : MonoBehaviour
 
     private void ModifyAccPow() {
         if (currBladeSpd > 2000) {
-            acc_pow = acc * (1 - (currBladeSpd - 2000) / 700);
-            dcc_pow = dcc * (1 + (currBladeSpd - 2000) / 700);
-            res_pow = res * (1 + (currBladeSpd - 2000) / 700);
+            acc_pow = acc * (1 - (currBladeSpd - 2000) / 1000);
+            dcc_pow = dcc * (1 + (currBladeSpd - 2000) / 1000);
+            res_pow = res * (1 + (currBladeSpd - 2000) / 1000);
         }
         else if (currBladeSpd <= 2000 && currBladeSpd > 1000) {
             acc_pow = acc;
@@ -278,7 +281,7 @@ public class PlayerController : MonoBehaviour
         else if (currBladeSpd < 1000) {
             acc_pow = acc * 1.5f;
             dcc_pow = dcc;
-            res_pow = res_pow / 1.5f;
+            res_pow = res / 1.5f;
         }
     }
 
@@ -320,7 +323,9 @@ public class PlayerController : MonoBehaviour
                 obj.SetActive(false);
             }
             rb.isKinematic = true;
-            StartCoroutine(RestartInTime(5f));
+            bladesAudio.Stop();
+            dustParticle.Stop();
+            GameManager.instance.HandlePlayerDeath();
         }
     }
 
@@ -353,11 +358,5 @@ public class PlayerController : MonoBehaviour
         force.y *= 0.2f;
         impactPoint.y = rb.position.y * 0.8f + impactPoint.y * 0.2f;
         rb.AddForceAtPosition(force, impactPoint, ForceMode.Impulse);
-    }
-
-    IEnumerator RestartInTime(float time){
-        yield return new WaitForSeconds(time);
-        Scene scene = SceneManager.GetActiveScene(); 
-        SceneManager.LoadScene(scene.name);
     }
 }

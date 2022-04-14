@@ -8,15 +8,19 @@ public class BlobController : MonoBehaviour
 {
     [Header("Settings")]
     public float health = 10;
+    public int atkDamage = 1;
     [Header("References")]
     public SkinnedMeshRenderer mesh;
     public GameObject hitParticle;
+
     private bool walking;
     private NavMeshAgent agentController;
     private Animator animator;
     private Color color;
 
     private Transform currentDestination;
+
+    private bool isDead = false;
 
     private void Awake()
     {
@@ -120,7 +124,7 @@ public class BlobController : MonoBehaviour
     public void SetScale(float scale)
     {
         transform.localScale = new Vector3(scale, scale, scale);
-        health = scale * 20f;
+        health = scale * 50f;
     }
 
     public void Damage(float amount)
@@ -139,7 +143,12 @@ public class BlobController : MonoBehaviour
 
     public void Die()
     {
+        if (isDead)
+            return;
         Destroy(gameObject);
+        GameManager.instance.AddScore(10 * Mathf.CeilToInt(transform.localScale.x));
+
+        isDead = true;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -156,7 +165,10 @@ public class BlobController : MonoBehaviour
             Damage(ms.damage);
             ms.OnCollisionEnter(null);
         }
+    }
 
+	private void OnTriggerStay(Collider other)
+	{
         if (other.GetComponent<Building>())
         {
             Building building = other.GetComponent<Building>();
@@ -165,8 +177,9 @@ public class BlobController : MonoBehaviour
                 if (building.transform == currentDestination)
                     GoToClosestFeature();
             }
-            else {
-                building.TakeContDamage((int)transform.localScale.x);
+            else
+            {
+                building.TakeContDamage((int)transform.localScale.x * atkDamage);
             }
         }
     }

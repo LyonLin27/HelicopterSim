@@ -24,7 +24,9 @@ public class UFO : MonoBehaviour {
     public float moveDistMax = 70f;
     
     [HideInInspector]
-    public Transform target = null; 
+    public Transform target = null;
+    
+    private bool isDead = false;
 
     private enum UFOState {
         Approach,
@@ -194,6 +196,8 @@ public class UFO : MonoBehaviour {
     }
 
     private void DestroyUFO() {
+        if (isDead)
+            return;
         // play particle
         // add force
         // play particle
@@ -206,6 +210,9 @@ public class UFO : MonoBehaviour {
         GetComponent<Rigidbody>().useGravity = true;
 
         Invoke("DestroyUFOEnd", 2f);
+
+        GameManager.instance.AddScore(50);
+        isDead = true;
     }
 
     private void DestroyUFOEnd() {
