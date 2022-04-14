@@ -26,7 +26,10 @@ public class BlobFood : MonoBehaviour
             minionTimer += Time.deltaTime;
             if(minionTimer > minionAbsorbTimer)
             {
-                currentMinionBlob.GetComponent<BlobController>().SetScale(currentMinionBlob.transform.localScale.x + 1);
+                if(currentMinionBlob.transform.localScale.x <= 20)
+                {
+                    currentMinionBlob.GetComponent<BlobController>().SetScale(currentMinionBlob.transform.localScale.x + 1);
+                }
                 timesSplit++;
                 if (timesSplit >= nodeContribution)
                 {
@@ -47,11 +50,7 @@ public class BlobFood : MonoBehaviour
         {
             if(other.gameObject.layer == 12)
             {
-                if(other.gameObject.transform.localScale.x <= 15)
-                {
-                    currentMinionBlob = other.gameObject;
-                }
-                
+                currentMinionBlob = other.gameObject;
             }
         }
         

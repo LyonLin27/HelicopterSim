@@ -83,7 +83,7 @@ public class BlobController : MonoBehaviour
         Building closestBuilding = GameManager.instance.GetClosestBuilding(transform.position);
         BlobFood closestFood = GameManager.instance.GetClosestBlobFood(transform.position);
 
-        if (transform.localScale.x <= 15 && Vector3.Distance(transform.position, closestFood.transform.position) <= Vector3.Distance(transform.position, closestBuilding.transform.position))
+        if (transform.localScale.x <= 20 && Vector3.Distance(transform.position, closestFood.transform.position) <= Vector3.Distance(transform.position, closestBuilding.transform.position))
         {
             SetDestination(closestFood.transform.position);
             currentDestination = closestFood.transform;
