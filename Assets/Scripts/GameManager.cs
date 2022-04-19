@@ -75,7 +75,7 @@ public partial class GameManager : MonoBehaviour
 	public void Update()
     {
         if(!playerTakeOff){
-            if(player.GetBladeSpd() > 1500){
+            if(player.GetVerticalSpd() > 0.1f){
                 InitiateHolodeckFade();
                 if (currLevel == LevelType.city)
                 {
@@ -113,16 +113,7 @@ public partial class GameManager : MonoBehaviour
         holodeckFading = true;
     }
 
-    private void EnablePlayerControl()
-    {
-        player.Controllable(true);
-    }
-
     private void Start() {
-        //InvokeRepeating("SpawnSomething", 10.0f, 90f);
-        EnablePlayerControl();
-        //Invoke("InitiateHolodeckFade", holodeckFadeDelay);
-
         SetupLevel();
     }
 
@@ -285,7 +276,7 @@ public partial class GameManager : MonoBehaviour
     public void AddScore(int value)
     {
         score += value;
-        player.field6.text = string.Format("{0} (+{1})", score, value);
+        player.hud.SetDebugInfo(6, string.Format("{0} (+{1})", score, value));
     }
 
 	#endregion Score
