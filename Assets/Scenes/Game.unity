@@ -3950,6 +3950,12 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 1953382823}
+    - target: {fileID: 2963840677096599488, guid: 64dda338597e5104490944ebc8dcd2e7,
+        type: 3}
+      propertyPath: heliType
+      value: 
+      objectReference: {fileID: 11400000, guid: 87ad3ef31fac85545911ae3b2814ee3a,
+        type: 2}
     - target: {fileID: 3065283392002687866, guid: 64dda338597e5104490944ebc8dcd2e7,
         type: 3}
       propertyPath: m_AnchorMin.y

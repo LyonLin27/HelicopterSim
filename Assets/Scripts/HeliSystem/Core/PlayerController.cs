@@ -33,6 +33,15 @@ public class PlayerController : MonoBehaviour
     public float msWaveInterval = 2f;
     public int msWaveCount = 0;
     public int msWaveMax = 4;
+    public float machineGunBulletSpd = 200f;
+
+    // control type
+    public enum ControlType
+    {
+        Manual,
+        AutoHover
+    }
+    private ControlType controlType;
 
     // key variables
     [HideInInspector] public int HP;
@@ -65,6 +74,7 @@ public class PlayerController : MonoBehaviour
         Physics.gravity = new Vector3(0f, -30f, 0f);
         rb.mass = heliType.mass;
 
+        controlType = ControlType.Manual;
         camType = CameraType.locked;
         hud.SetDebugInfo(5, camType.ToString());
 
@@ -89,6 +99,9 @@ public class PlayerController : MonoBehaviour
             pi = new PlayerInput();
         }
         pi.actions.HeliController.MenuAction.performed += ctx => HandleMenuInput();
+
+        foreach (var gun in machineGuns)
+            gun.SetupWeapon(machineGunBulletSpd);
     }
 
 	private void OnDestroy()
@@ -205,9 +218,22 @@ public class PlayerController : MonoBehaviour
 
     private void HandlePhysicsFixedUpdate()
     {
-        ModifyAccPow();
-        ApplyBladesSpd();
-        ApplyTilting();
+        switch (controlType)
+        {
+            case ControlType.Manual:
+                ModifyAccPow();
+                ApplyBladesSpd(CalcDeltaBladeSpd());
+                ApplyTilting();
+                if (pi.isStablized)
+                    Stablize();
+                break;
+            case ControlType.AutoHover:
+                pi.isStablized = true;
+                ApplyBladesSpd(CalcDeltaBladeSpd());
+                ApplyTilting();
+                Stablize(2f);
+                break;
+        }
         ApplyGroundEffect();
     }
 
@@ -233,22 +259,39 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void ApplyBladesSpd()
+    private float CalcDeltaBladeSpd()
     {
-        float accSpd = pi.acc_parsed * acc_pow - pi.dcc_parsed * dcc_pow;
-        float resSpd = currBladeSpd > 0 ? -res_pow : 0;
-        currBladeSpd += (accSpd + resSpd) * Time.fixedDeltaTime;
+        if (controlType == ControlType.AutoHover)
+        {
+            float maxDeltaSpd = heliType.acc - heliType.res;
+            float ratio = Mathf.Clamp(rb.velocity.y / -5f, -1f, 1f);
+            float controlledRatio = 0.3f;
+            float controlledSpd = pi.acc_parsed * acc_pow - pi.dcc_parsed * dcc_pow;
+            return maxDeltaSpd * ratio + pi.acc_parsed + controlledSpd * controlledRatio;
+        }
+        else 
+        {
+            float accSpd = pi.acc_parsed * acc_pow - pi.dcc_parsed * dcc_pow;
+            float resSpd = currBladeSpd > 0 ? -res_pow : 0;
+            return accSpd + resSpd;
+        }
+    }
+
+    private void ApplyBladesSpd(float deltaBladeSpd)
+    {
+        currBladeSpd += deltaBladeSpd * Time.fixedDeltaTime;
 
         if (currBladeSpd < 0)
             currBladeSpd = 0;
 
         Vector3 currRot = blades.transform.localEulerAngles;
         Vector3 currRearRot = rearBlades.transform.localEulerAngles;
-        blades.transform.localEulerAngles = Vector3.up * (currRot.y + currBladeSpd * Time.fixedDeltaTime);
-        rearBlades.transform.localEulerAngles = new Vector3(0f, 0f, currRearRot.z + currBladeSpd * 0.5f * Time.fixedDeltaTime);
+        float deltaBladeAngle = currBladeSpd * 2000f / heliType.highForceThreshold;
+        blades.transform.localEulerAngles = Vector3.up * (currRot.y + deltaBladeAngle * Time.fixedDeltaTime);
+        rearBlades.transform.localEulerAngles = new Vector3(0f, 0f, currRearRot.z + deltaBladeAngle * 0.5f * Time.fixedDeltaTime);
         rb.AddForce(blades.transform.up * currBladeSpd * Time.fixedDeltaTime, heliType.forceMode);
 
-        hud.SetDebugInfo(0, (accSpd + resSpd).ToString("0"));
+        hud.SetDebugInfo(0, deltaBladeSpd.ToString("0"));
         hud.SetDebugInfo(1, currBladeSpd.ToString("0"));
         hud.SetDebugInfo(2, string.Format("{0} / {1}",
             new Vector2(rb.velocity.x, rb.velocity.z).magnitude.ToString("0.0"), rb.velocity.y.ToString("0.0")));
@@ -264,20 +307,19 @@ public class PlayerController : MonoBehaviour
 
         Vector3 torque = new Vector3(xTorque, yTorque, zTorque);
         rb.AddRelativeTorque(torque);
+    }
 
-        // stablizer
-        if (pi.isStablized)
+    private void Stablize(float stabMult = 1f)
+    {
+        Vector3 currTlt = rb.rotation.eulerAngles;
+        currTlt = NormalizeEulerAngle(currTlt);
+
+        if (Mathf.Abs(currTlt.x) < 90f && Mathf.Abs(currTlt.z) < 90f)
         {
-            Vector3 currTlt = rb.rotation.eulerAngles;
-            currTlt = NormalizeEulerAngle(currTlt);
+            float angleDiff = Vector3.Angle(transform.up, Vector3.up);
+            Vector3 axis = Vector3.Cross(transform.up, Vector3.up);
 
-            if (Mathf.Abs(currTlt.x) < 90f && Mathf.Abs(currTlt.z) < 90f)
-            {
-                float angleDiff = Vector3.Angle(transform.up, Vector3.up);
-                Vector3 axis = Vector3.Cross(transform.up, Vector3.up);
-
-                transform.Rotate(axis, angleDiff * Time.fixedDeltaTime * heliType.balanceTorque, Space.World);
-            }
+            transform.Rotate(axis, angleDiff * Time.fixedDeltaTime * heliType.balanceTorque * stabMult, Space.World);
         }
     }
 
@@ -328,6 +370,13 @@ public class PlayerController : MonoBehaviour
             }
 
             hud.SetDebugInfo(5, camType.ToString());
+        }
+        if (pi.menu_in.y < -0.5f)
+        {
+            if (controlType == ControlType.Manual)
+                controlType = ControlType.AutoHover;
+            else
+                controlType = ControlType.Manual;
         }
     }
 

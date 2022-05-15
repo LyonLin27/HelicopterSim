@@ -20,8 +20,8 @@ MonoBehaviour:
   res: 5000
   tltAcc: 15
   tltMax: 60
-  rotAcc: 20
+  rotAcc: 30
   lowForceThreshold: 10000
-  highForceThreshold: 50000
+  highForceThreshold: 55000
   highForceDropRange: 10000
-  balanceTorque: 1
+  balanceTorque: 1.5

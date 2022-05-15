@@ -134,7 +134,7 @@ MonoBehaviour:
   explosion: {fileID: 5735518675004475529}
   smoke: {fileID: 1733303821523222601}
   target: {fileID: 0}
-  spd: 50
+  spd: 150
   delay: 0.5
 --- !u!1 &3156085898412622974
 GameObject:

@@ -5183,7 +5183,7 @@ Rigidbody:
   m_GameObject: {fileID: 1948294246134107622}
   serializedVersion: 2
   m_Mass: 120
-  m_Drag: 1
+  m_Drag: 0.5
   m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -5244,6 +5244,7 @@ MonoBehaviour:
   msWaveInterval: 2
   msWaveCount: 0
   msWaveMax: 4
+  machineGunBulletSpd: 200
   HP: 0
 --- !u!1 &2074953265807833495
 GameObject:
@@ -7234,7 +7235,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8591243539844612238}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d96865f08c165554c99919e0901ba7e3, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.1
@@ -7248,7 +7249,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8591243539844612238}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: d96865f08c165554c99919e0901ba7e3, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.1
