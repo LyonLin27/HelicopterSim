@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab75820ed8504434382372c6bf88c84d, type: 3}
   m_Name: Prototype
   m_EditorClassIdentifier: 
-  HP: 100
+  HP: 200
   forceMode: 5
   mass: 120
   acc: 340
