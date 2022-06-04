@@ -2,62 +2,69 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Missile : MonoBehaviour
+public class Missile : PlayerProjBase
 {
-    public int damage = 50;
-    public List<MeshRenderer> disableOnColl;
-    public ParticleSystem explosion;
-    public ParticleSystem smoke;
-    public Transform target;
-    public float spd = 50f;
-    public float delay = 0.5f;
-    private Rigidbody rb;
-    private float startTime;
+    // visuals
+    public List<MeshRenderer> _disableOnColl;
+    public ParticleSystem _explosion;
+    public ParticleSystem _smoke;
+
+    // ref
+    private Rigidbody _rb;
+    [HideInInspector]public Transform _target;
+
+    // parameters
+    public float _spd = 50f;
+    public float _delay = 0.5f;
 
     void Awake(){
-        rb = GetComponent<Rigidbody>(); 
-        startTime = Time.time;
+        _rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(target){
-            transform.up = Vector3.MoveTowards(transform.up, target.position - transform.position, Time.deltaTime * 10f);
+        if(_target){
+            transform.up = Vector3.MoveTowards(transform.up, _target.position - transform.position, Time.deltaTime * 10f);
         }
-        rb.velocity = transform.up * spd;
-        if(Time.time - startTime > 7f && !rb.isKinematic){
+        _rb.velocity = transform.up * _spd;
+        if(Time.time - _startTime > 7f && !_rb.isKinematic){
             SelfDestroy();
         }
     }
 
-    public void SetTarget(Transform _target){
-        StartCoroutine(SetTargetWithDelay(_target));
+    public void InitMissile(int dmg, float spd, float delay, Transform target)
+    {
+        InitProjInfo(dmg);
+        _spd = spd;
+        _delay = delay;
+        StartCoroutine(SetTargetWithDelay(target));
     }
 
-    IEnumerator SetTargetWithDelay(Transform _target){
-        yield return new WaitForSeconds(delay);
-        target = _target;
+    IEnumerator SetTargetWithDelay(Transform target){
+        yield return new WaitForSeconds(_delay);
+        _target = target;
     }
 
-    public void OnCollisionEnter(Collision collision) {
-        foreach(MeshRenderer mr in disableOnColl){
+    public override void DespawnSequence()
+    {
+        foreach (MeshRenderer mr in _disableOnColl){
             mr.enabled = false;
         }
-        rb.isKinematic = true;
+        _rb.isKinematic = true;
         GetComponent<Collider>().enabled = false;
-        explosion.Play();
-        smoke.Stop();
+        _explosion.Play();
+        _smoke.Stop();
         StartCoroutine(CleanUp());
     }
 
     private void SelfDestroy(){
-        foreach(MeshRenderer mr in disableOnColl){
+        foreach(MeshRenderer mr in _disableOnColl){
             mr.enabled = false;
         }
-        rb.isKinematic = true;
+        _rb.isKinematic = true;
         GetComponent<Collider>().enabled = false;
-        smoke.Stop();
+        _smoke.Stop();
         StartCoroutine(CleanUp());
     }
 

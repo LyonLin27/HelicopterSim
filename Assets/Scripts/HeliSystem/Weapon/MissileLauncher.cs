@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class MissileLauncher : MonoBehaviour
 {
+    // param
+    public int mslDmg = 200;
+    public float mslSpd = 150;
+    public float mslHomDelay = 0.5f;
+
     [HideInInspector]
     public Rigidbody heliRB;
 
@@ -11,7 +16,7 @@ public class MissileLauncher : MonoBehaviour
         //GameObject bullet = WeaponPool.instance.GetBullet();
         //bullet.SetActive(true);
         GameObject bullet = Instantiate(WeaponPool.instance.MissilePrefab);
-        bullet.GetComponent<Missile>().SetTarget(target);
+        bullet.GetComponent<Missile>().InitMissile(mslDmg, mslSpd, mslHomDelay, target);
         bullet.transform.position = transform.position;
         bullet.transform.rotation = transform.rotation;
         //bullet.transform.up = transform.forward;

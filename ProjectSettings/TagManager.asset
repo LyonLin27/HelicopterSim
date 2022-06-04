@@ -14,8 +14,8 @@ TagManager:
   - 
   - 
   - Ground
-  - BossBlobCollider
-  - Bullet
+  - EnemyProj
+  - PlayerProj
   - BossBlobTrigger
   - MinionBlobTrigger
   - Player

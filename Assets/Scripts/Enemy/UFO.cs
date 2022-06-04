@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UFO : MonoBehaviour {
+public class UFO : EnemyBase
+{
     [Header("Refs")]
     [SerializeField] private ParticleSystem explodsion1;
     [SerializeField] private ParticleSystem explodsion2;
@@ -179,9 +180,10 @@ public class UFO : MonoBehaviour {
         stateFirstFrame = true;
     }
 
-    public void Damage(float dmg, Vector3 hitPoint) {
-        dmgHitPoint = hitPoint;
-        health -= dmg;
+    public override void TakeDamage(PlayerProjInfo projInfo)
+    {
+        dmgHitPoint = projInfo.pos;
+        health -= projInfo.damage;
         interupted = true;
         Invoke("ApplyImpact", 0.2f);
         if (health <= 0) {
@@ -228,11 +230,8 @@ public class UFO : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
-        if (collision.collider.GetComponent<Bullet>()) {
-            Damage(collision.collider.GetComponent<Bullet>().damage, collision.collider.transform.position);
-        }
-        else if (collision.collider.GetComponent<Missile>()){
-            Damage(collision.collider.GetComponent<Missile>().damage, collision.collider.transform.position);
+        if (collision.collider.GetComponent<PlayerProjBase>()) {
+            TakeDamage(collision.collider.GetComponent<PlayerProjBase>().GetProjInfo());
         }
         else {
             SwitchState(UFOState.Move);

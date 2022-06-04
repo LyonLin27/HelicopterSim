@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class MachineGun : MonoBehaviour
 {
+    public float bulletSpd = 100f;
+    public int bulletDmg = 20;
+
     [HideInInspector]
     public Rigidbody heliRB;
-    private float bulletSpd = 100f;
 
     public void Fire() {
         GameObject bullet = WeaponPool.instance.GetBullet();
         bullet.SetActive(true);
+        bullet.GetComponent<Bullet>().InitBullet(bulletDmg);
         bullet.transform.position = transform.position;
         bullet.transform.rotation = transform.rotation;
         bullet.GetComponent<Rigidbody>().velocity = heliRB.velocity + bullet.transform.forward * bulletSpd;

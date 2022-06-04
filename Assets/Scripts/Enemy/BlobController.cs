@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BlobController : MonoBehaviour
+public class BlobController : EnemyBase
 {
     [Header("Settings")]
     public float health = 10;
@@ -127,17 +127,17 @@ public class BlobController : MonoBehaviour
         health = scale * 50f;
     }
 
-    public void Damage(float amount)
+    public override void TakeDamage(PlayerProjInfo projInfo)
     {
         SpawnHitParticle();
-        if(health - amount <= 0)
+        if(health - projInfo.damage <= 0)
         {
             health = 0;
             Die();
         }
         else
         {
-            health -= amount;
+            health -= projInfo.damage;
         }
     }
 
@@ -156,13 +156,13 @@ public class BlobController : MonoBehaviour
         if (other.gameObject.layer == 10) // if bullet layer
         {
             Bullet bullet = other.GetComponent<Bullet>();
-            Damage(bullet.damage);
+            TakeDamage(bullet.GetProjInfo());
             bullet.OnCollisionEnter(null);
         }
 
         Missile ms = other.GetComponent<Missile>();
         if(ms){
-            Damage(ms.damage);
+            TakeDamage(ms.GetProjInfo());
             ms.OnCollisionEnter(null);
         }
     }
