@@ -183,3 +183,4 @@ Received Import Request.
 Start importing Assets/HeliTypes/Prototype.asset using Guid(19505479cc4ba0b4c8ed149332eb54ea) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '520e3d5be9bcfb2dd076c978350174ec') in 0.008496 seconds 
   Import took 0.013373 seconds .
 
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
