@@ -393,6 +393,11 @@ public class PlayerController : MonoBehaviour
         return rb.velocity.y;
     }
 
+    public Vector3 GetVelocity()
+    {
+        return rb.velocity;
+    }
+
 	#endregion public getters
 
 	#region public modifider
