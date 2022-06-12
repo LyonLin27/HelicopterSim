@@ -20,7 +20,6 @@ public class SpeedLine : MonoBehaviour
     void Update()
     {
         Vector3 velocity = _player.GetVelocity();
-        transform.forward = velocity.normalized;
 
         var psMain = _ps.main;
         psMain.startSpeed = new ParticleSystem.MinMaxCurve(-1f * velocity.magnitude);
@@ -33,7 +32,7 @@ public class SpeedLine : MonoBehaviour
         else
         {
             psEmission.rateOverTime = _maxEmissionRate * (velocity.magnitude / _startThreshold);
+            transform.forward = velocity.normalized;
         }
-        print(psEmission.rateOverTime.constant);
     }
 }

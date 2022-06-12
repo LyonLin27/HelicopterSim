@@ -47,6 +47,8 @@ public class RotateCannon : EnemyBase
         if (_isDead)
             return;
 
+        _rootForward = transform.forward;
+
         if (TargetInRange())
         {
             TurnToTarget();

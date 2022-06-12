@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4066968880673386304}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: ShootPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -39,7 +39,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5082045102057356511}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 676720351565001687}
   - component: {fileID: 3822698257439089353}
   - component: {fileID: 6336549395225922261}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: explosionDebris
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4951,7 +4951,7 @@ GameObject:
   - component: {fileID: 4009967182106320549}
   - component: {fileID: 8787050393768179236}
   - component: {fileID: 377894242954310715}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13578,7 +13578,7 @@ MeshCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
-  m_Convex: 0
+  m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 0}
 --- !u!1 &7609639474011735335
@@ -13590,7 +13590,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6757288026228916349}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13622,10 +13622,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1260764274001085864}
-  - component: {fileID: 3767695072054477577}
+  - component: {fileID: 573376905695461249}
   - component: {fileID: 5075017264351397811}
   - component: {fileID: 2030744702593023252}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: RotateCannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -13648,7 +13648,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
---- !u!54 &3767695072054477577
+--- !u!54 &573376905695461249
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13658,11 +13658,11 @@ Rigidbody:
   serializedVersion: 2
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
-  m_UseGravity: 1
+  m_AngularDrag: 0
+  m_UseGravity: 0
   m_IsKinematic: 1
   m_Interpolate: 0
-  m_Constraints: 12
+  m_Constraints: 0
   m_CollisionDetection: 0
 --- !u!135 &5075017264351397811
 SphereCollider:
@@ -13719,7 +13719,7 @@ GameObject:
   - component: {fileID: 2564171806176275043}
   - component: {fileID: 5296006094529010651}
   - component: {fileID: 5010701837512641125}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14611,6 +14611,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: explosionGvty
+      objectReference: {fileID: 0}
+    - target: {fileID: 4558361457401075221, guid: ceb11a22c41d7234198cfa072baf98d9,
+        type: 3}
+      propertyPath: m_Layer
+      value: 14
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ceb11a22c41d7234198cfa072baf98d9, type: 3}
