@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class CruiserController : MonoBehaviour
 {
+    // todo
+    // stuck solution
+    // weapon system
+    // 
+
+    [Header("Ref")]
     [HideInInspector] public Transform _navTarget;
 
+    [Header("Steering")]
     [SerializeField] private float _maxSpd;
     [SerializeField] private float _maxForce;
     [SerializeField] private float _maxTorque;
@@ -16,9 +23,19 @@ public class CruiserController : MonoBehaviour
     [SerializeField] private float _navReachRange = 30f;
     [SerializeField] private LayerMask _navValidCheckMask;
 
+    [Header("Weapon")]
+    public List<RotateCannon> _leftRotateCannons;
+    public List<RotateCannon> _rightRotateCannons;
+    [SerializeField] private float _attackRange = 100f;
+    [SerializeField] private float _volleyItv = 3f;
+
     private float _vertDecelerateRange = 30f;
 
     private Rigidbody _rb;
+
+    // weapon status
+    private bool _targetInRange;
+    private float _lastVolleyTime;
 
 
     void Start()
@@ -48,6 +65,8 @@ public class CruiserController : MonoBehaviour
 
             Debug.DrawRay(ray.origin, ray.direction * Vector3.Distance(newNavPos, transform.position), newNavPosValid ? Color.green : Color.red, 1f);
         }
+
+        HandleWeapons();
     }
 
 
@@ -58,7 +77,9 @@ public class CruiserController : MonoBehaviour
         Stablize();
 	}
 
-    private void HandleSteering()
+	#region Steering and Balance
+
+	private void HandleSteering()
     {
         // calc hori and verti steering
         Vector3 horiNavPos = _navTarget.position;
@@ -89,8 +110,8 @@ public class CruiserController : MonoBehaviour
 
         // vert force
         float vertForceRate = Mathf.Clamp01(Mathf.Abs(vertNavOffset) / _vertDecelerateRange);
-        float vertForce = Mathf.Sign(vertNavOffset) * _maxForce * 0.5f * vertForceRate;
-        _rb.AddForce(0f, vertForce * Time.fixedDeltaTime, 0f);
+        float vertForce = Mathf.Sign(vertNavOffset) * _maxForce * vertForceRate;
+        _rb.AddForce(0f, vertForce * Time.fixedDeltaTime, 0f, ForceMode.Acceleration);
 
         if (_rb.velocity.magnitude > _maxSpd)
         {
@@ -111,8 +132,72 @@ public class CruiserController : MonoBehaviour
             transform.Rotate(axis, angleDiff * Time.fixedDeltaTime * _balanceTorque * stabMult, Space.World);
         }
     }
+    #endregion Steering and Balance
 
-    private Vector3 NormalizeEulerAngle(Vector3 angle)
+    #region Weapon Control
+
+    private void HandleWeapons()
+    {
+        Transform target = GameManager.instance.player.transform;
+        Vector3 posOffset = target.position - transform.position;
+        _targetInRange = posOffset.magnitude < _attackRange;
+
+        if (_targetInRange)
+        {
+            bool targetOnRight = Vector3.Dot(posOffset, transform.right) > 0;
+            List<RotateCannon> cannonList = targetOnRight ? _rightRotateCannons : _leftRotateCannons;
+            List<RotateCannon> idleCannonList = targetOnRight ? _leftRotateCannons : _rightRotateCannons;
+
+            int cannonCount = cannonList.Count;
+            if (cannonCount == 0)
+                return;
+
+            foreach (RotateCannon cannon in cannonList)
+            {
+                cannon.SetMode(RotateCannon.CannonMode.Volley);
+                cannon.SetTargetDir(posOffset.normalized);
+
+                if (cannon.IsDead() || cannon.IsReadyToVolley())
+                {
+                    cannonCount--;
+                }
+            }
+
+            foreach (RotateCannon cannon in idleCannonList)
+            {
+                cannon.SetMode(RotateCannon.CannonMode.Idle);
+            }
+
+            if (cannonCount == 0 && Time.time - _lastVolleyTime > _volleyItv)
+            {
+                Volley(cannonList);
+            }
+        }
+        else {
+        // todo: refactor with state machine
+            foreach (RotateCannon cannon in _rightRotateCannons)
+            {
+                cannon.SetMode(RotateCannon.CannonMode.Idle);
+            }
+            foreach (RotateCannon cannon in _leftRotateCannons)
+            {
+                cannon.SetMode(RotateCannon.CannonMode.Idle);
+            }
+        }
+    }
+
+    private void Volley(List<RotateCannon> cannonList)
+    {
+        _lastVolleyTime = Time.time;
+        foreach (RotateCannon cannon in cannonList)
+        {
+            cannon.TriggerFire();
+        }
+    }
+
+	#endregion Weapon Control
+
+	private Vector3 NormalizeEulerAngle(Vector3 angle)
     {
         while (angle.x > 180) angle.x -= 360f;
         while (angle.y > 180) angle.y -= 360f;
